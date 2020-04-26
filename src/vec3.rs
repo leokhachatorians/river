@@ -113,4 +113,15 @@ mod tests {
         assert_eq!(test_vec + other, sum);
     }
 
+    #[test]
+    fn vec3_add_assign() {
+        let mut test_vec = Vec3::new(1.0, 2.0, 3.0);
+        let other = Vec3::new(3.0, 4.0, 5.0);
+        let sum = Vec3::new(4.0, 6.0, 8.0);
+
+        test_vec += other;
+
+        assert_eq!(test_vec, sum);
+    }
+
 }
