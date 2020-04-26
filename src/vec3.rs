@@ -1,4 +1,7 @@
-use std::ops;
+use std::ops::{
+    Add, AddAssign, Sub, SubAssign,
+    Div, DivAssign, Mul, MulAssign
+};
 
 #[derive(Debug, PartialEq)]
 pub struct Vec3 {
@@ -35,8 +38,8 @@ impl Vec3 {
     }
 }
 
-impl ops::Add<Vec3> for Vec3 {
-    type Output = Vec3;
+impl Add<Vec3> for Vec3 {
+    type Output = Self;
 
     fn add(self, other: Vec3) -> Vec3 {
         Vec3 {
@@ -49,7 +52,7 @@ impl ops::Add<Vec3> for Vec3 {
     }
 }
 
-impl ops::AddAssign<Vec3> for Vec3 {
+impl AddAssign<Vec3> for Vec3 {
     fn add_assign(&mut self, other: Self) {
         *self = Self {
             elements: [
@@ -61,8 +64,8 @@ impl ops::AddAssign<Vec3> for Vec3 {
     }
 }
 
-impl ops::Sub<Vec3> for Vec3 {
-    type Output = Vec3;
+impl Sub<Vec3> for Vec3 {
+    type Output = Self;
 
     fn sub(self, other: Vec3) -> Vec3 {
         Vec3 {
@@ -75,7 +78,7 @@ impl ops::Sub<Vec3> for Vec3 {
     }
 }
 
-impl ops::SubAssign<Vec3> for Vec3 {
+impl SubAssign<Vec3> for Vec3 {
     fn sub_assign(&mut self, other: Self) {
         *self = Self {
             elements: [
@@ -86,6 +89,13 @@ impl ops::SubAssign<Vec3> for Vec3 {
         }
     }
 }
+
+//impl Div<Vec3> for Vec3 {
+//    type Output = Self;
+//
+//    fn div(self, other: Scalar) {
+//    }
+//}
 
 
 #[cfg(test)]
