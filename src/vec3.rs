@@ -1,5 +1,6 @@
 use std::ops;
 
+#[derive(Debug, PartialEq)]
 pub struct Vec3 {
     pub elements: [f64; 3]
 }
@@ -84,4 +85,32 @@ impl ops::SubAssign<Vec3> for Vec3 {
             ]
         }
     }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn vec3_creation() {
+        let test_vec = Vec3::new(1.0, 2.0, 3.0);
+        
+        assert_eq!(test_vec.x(), 1.0);
+        assert_eq!(test_vec.y(), 2.0);
+        assert_eq!(test_vec.z(), 3.0);
+        assert_eq!(test_vec.r(), 1.0);
+        assert_eq!(test_vec.g(), 2.0);
+        assert_eq!(test_vec.b(), 3.0);
+    }
+
+    #[test]
+    fn vec3_add() {
+        let test_vec = Vec3::new(1.0, 2.0, 3.0);
+        let other = Vec3::new(3.0, 4.0, 5.0);
+        let sum = Vec3::new(4.0, 6.0, 8.0);
+
+        assert_eq!(test_vec + other, sum);
+    }
+
 }
