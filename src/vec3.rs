@@ -116,6 +116,28 @@ impl MulAssign<Vec3> for Vec3 {
     }
 }
 
+impl Mul<f64> for Vec3 {
+    type Output = Self;
+
+    fn mul(self, value: f64) -> Self {
+        Self {
+            elements: [
+                self.x() * value,
+                self.y() * value,
+                self.z() * value
+            ]
+        }
+    }
+}
+
+impl Mul<Vec3> for f64 {
+    type Output = Vec3;
+
+    fn mul(self, vec3: Vec3) -> Vec3 {
+        vec3 * self
+    }
+}
+
 impl Div<Vec3> for Vec3 {
     type Output = Self;
 
@@ -127,6 +149,22 @@ impl Div<Vec3> for Vec3 {
                 self.z() / other.z(),
             ]
         }
+    }
+}
+
+impl Div<f64> for Vec3 {
+    type Output = Self;
+
+    fn div(self, value: f64) -> Self {
+        (1.0 / value) * self
+    }
+}
+
+impl Div<Vec3> for f64 {
+    type Output = Vec3;
+
+    fn div(self, vec3: Vec3) -> Vec3 {
+        vec3 / self
     }
 }
 
@@ -220,12 +258,48 @@ mod tests {
     }
 
     #[test]
+    fn vec3_mul_value_1() {
+        let mut test_vec = Vec3::new(1.0, 2.0, 3.0);
+        let value: f64 = 2.0;
+        let product = Vec3::new(2.0, 4.0, 6.0);
+        
+        assert_eq!(test_vec * value, product);
+    }
+
+    #[test]
+    fn vec3_mul_value_2() {
+        let mut test_vec = Vec3::new(1.0, 2.0, 3.0);
+        let value: f64 = 2.0;
+        let product = Vec3::new(2.0, 4.0, 6.0);
+        
+        assert_eq!(value * test_vec, product);
+    }
+
+    #[test]
     fn vec3_div() {
         let test_vec = Vec3::new(1.0, 2.0, 3.0);
         let other = Vec3::new(2.0, 2.0, 2.0);
         let quotient = Vec3::new(0.5, 1.0, 1.5);
 
         assert_eq!(test_vec / other, quotient);
+    }
+
+    #[test]
+    fn vec3_div_value_1() {
+        let test_vec = Vec3::new(1.0, 2.0, 3.0);
+        let value: f64 = 2.0;
+        let quotient = Vec3::new(0.5, 1.0, 1.5);
+
+        assert_eq!(test_vec / value, quotient);
+    }
+
+    #[test]
+    fn vec3_div_value_2() {
+        let test_vec = Vec3::new(1.0, 2.0, 3.0);
+        let value: f64 = 2.0;
+        let quotient = Vec3::new(0.5, 1.0, 1.5);
+
+        assert_eq!(value / test_vec, quotient);
     }
 
     #[test]
@@ -238,5 +312,4 @@ mod tests {
 
         assert_eq!(test_vec, quotient);
     }
-
 }
