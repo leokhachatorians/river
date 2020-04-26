@@ -124,4 +124,13 @@ mod tests {
         assert_eq!(test_vec, sum);
     }
 
+    #[test]
+    fn vec3_sub() {
+        let test_vec = Vec3::new(1.0, 2.0, 3.0);
+        let other = Vec3::new(2.5, 1.0, 6.0);
+        let diff = Vec3::new(-1.5, 1.0, -3.0);
+
+        assert_eq!(test_vec - other, diff);
+    }
+
 }
