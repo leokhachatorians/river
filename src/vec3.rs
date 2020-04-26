@@ -47,3 +47,41 @@ impl ops::Add<Vec3> for Vec3 {
         }
     }
 }
+
+impl ops::AddAssign<Vec3> for Vec3 {
+    fn add_assign(&mut self, other: Self) {
+        *self = Self {
+            elements: [
+                self.x() + other.x(),
+                self.y() + other.y(),
+                self.z() + other.z(),
+            ]
+        }
+    }
+}
+
+impl ops::Sub<Vec3> for Vec3 {
+    type Output = Vec3;
+
+    fn sub(self, other: Vec3) -> Vec3 {
+        Vec3 {
+            elements: [
+                self.x() - other.x(),
+                self.y() - other.y(),
+                self.z() - other.z()
+            ]
+        }
+    }
+}
+
+impl ops::SubAssign<Vec3> for Vec3 {
+    fn sub_assign(&mut self, other: Self) {
+        *self = Self {
+            elements: [
+                self.x() - other.x(),
+                self.y() - other.y(),
+                self.z() - other.z(),
+            ]
+        }
+    }
+}

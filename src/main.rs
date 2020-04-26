@@ -22,7 +22,10 @@ fn main() {
     //    }
     //}
     //
-    let v = vec3::Vec3::new(1.0, 2.0, 3.0);
+    let mut v = vec3::Vec3::new(1.0, 2.0, 3.0);
+    let other = vec3::Vec3::new(1.0, 2.0, 3.0);
+
+    v -= other;
 
     println!("X: {}", v.x());
     println!("Y: {}", v.y());
