@@ -104,13 +104,43 @@ impl Mul<Vec3> for Vec3 {
     }
 }
 
-//impl Div<Vec3> for Vec3 {
-//    type Output = Self;
-//
-//    fn div(self, other: Scalar) {
-//        
-//    }
-//}
+impl MulAssign<Vec3> for Vec3 {
+    fn mul_assign(&mut self, other: Self) {
+        *self = Self {
+            elements: [
+                self.x() * other.x(),
+                self.y() * other.y(),
+                self.z() * other.z(),
+            ]
+        }
+    }
+}
+
+impl Div<Vec3> for Vec3 {
+    type Output = Self;
+
+    fn div(self, other: Self) -> Self {
+        Self {
+            elements: [
+                self.x() / other.x(),
+                self.y() / other.y(),
+                self.z() / other.z(),
+            ]
+        }
+    }
+}
+
+impl DivAssign<Vec3> for Vec3 {
+    fn div_assign(&mut self, other: Self) {
+        *self = Self {
+            elements: [
+                self.x() / other.x(),
+                self.y() / other.y(),
+                self.z() / other.z(),
+            ]
+        }
+    }
+}
 
 
 #[cfg(test)]
@@ -176,6 +206,37 @@ mod tests {
         let product = Vec3::new(2.0, 4.0, 6.0);
 
         assert_eq!(test_vec * other, product);
+    }
+
+    #[test]
+    fn vec3_mul_assign() {
+        let mut test_vec = Vec3::new(1.0, 2.0, 3.0);
+        let other = Vec3::new(2.0, 2.0, 2.0);
+        let product = Vec3::new(2.0, 4.0, 6.0);
+
+        test_vec *= other;
+
+        assert_eq!(test_vec, product);
+    }
+
+    #[test]
+    fn vec3_div() {
+        let test_vec = Vec3::new(1.0, 2.0, 3.0);
+        let other = Vec3::new(2.0, 2.0, 2.0);
+        let quotient = Vec3::new(0.5, 1.0, 1.5);
+
+        assert_eq!(test_vec / other, quotient);
+    }
+
+    #[test]
+    fn vec3_div_assign() {
+        let mut test_vec = Vec3::new(1.0, 2.0, 3.0);
+        let other = Vec3::new(2.0, 2.0, 2.0);
+        let quotient = Vec3::new(0.5, 1.0, 1.5);
+
+        test_vec /= other;
+
+        assert_eq!(test_vec, quotient);
     }
 
 }
