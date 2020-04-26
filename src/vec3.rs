@@ -42,7 +42,7 @@ impl Add<Vec3> for Vec3 {
     type Output = Self;
 
     fn add(self, other: Vec3) -> Vec3 {
-        Vec3 {
+        Self {
             elements: [
                 self.x() + other.x(),
                 self.y() + other.y(),
@@ -67,8 +67,8 @@ impl AddAssign<Vec3> for Vec3 {
 impl Sub<Vec3> for Vec3 {
     type Output = Self;
 
-    fn sub(self, other: Vec3) -> Vec3 {
-        Vec3 {
+    fn sub(self, other: Self) -> Self {
+        Self {
             elements: [
                 self.x() - other.x(),
                 self.y() - other.y(),
@@ -90,10 +90,25 @@ impl SubAssign<Vec3> for Vec3 {
     }
 }
 
+impl Mul<Vec3> for Vec3 {
+    type Output = Self;
+
+    fn mul(self, other: Self) -> Self {
+        Self {
+            elements: [
+                self.x() * other.x(),
+                self.y() * other.y(),
+                self.z() * other.z()
+            ]
+        }
+    }
+}
+
 //impl Div<Vec3> for Vec3 {
 //    type Output = Self;
 //
 //    fn div(self, other: Scalar) {
+//        
 //    }
 //}
 
@@ -152,7 +167,15 @@ mod tests {
         test_vec -= other;
 
         assert_eq!(test_vec, diff);
+    }
 
+    #[test]
+    fn vec3_mul() {
+        let test_vec = Vec3::new(1.0, 2.0, 3.0);
+        let other = Vec3::new(2.0, 2.0, 2.0);
+        let product = Vec3::new(2.0, 4.0, 6.0);
+
+        assert_eq!(test_vec * other, product);
     }
 
 }
