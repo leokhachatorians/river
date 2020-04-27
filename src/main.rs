@@ -1,6 +1,7 @@
 const IMAGE_WIDTH: i32 = 200;
 const IMAGE_HEIGHT: i32 = 100;
 
+mod utility;
 mod vec3;
 
 fn main() {
@@ -26,6 +27,12 @@ fn main() {
     let other = vec3::Vec3::new(1.0, 2.0, 3.0);
 
     v -= other;
+
+    let f = vec3::Vec3::new(2.0, -4.0, 1.0);
+
+    println!("{:?}", utility::unit_vector(f));
+
+    //println!("{}", vec3::
 
     println!("X: {}", v.x());
     println!("Y: {}", v.y());
