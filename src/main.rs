@@ -1,21 +1,40 @@
+mod ray;
 mod utility;
 mod vec3;
 
 const IMAGE_WIDTH: i32 = 200;
 const IMAGE_HEIGHT: i32 = 100;
 
+fn ray_color(r: &ray::Ray) -> vec3::Vec3 {
+    let unit_direciton = utility::unit_vector(r.direction());
+    let t = 0.5 * (unit_direciton.y() + 1.0);
+    return (1.0 - t) * vec3::Vec3::new(1.0, 1.0, 1.0) + t * vec3::Vec3::new(0.5, 0.7, 1.0);
+}
+
 fn main() {
 
     println!("P3\n{} {}\n255", IMAGE_WIDTH, IMAGE_HEIGHT);
 
+    let lower_left_corner = vec3::Vec3::new(-2.0, -1.0, -1.0);
+    let horizontal = vec3::Vec3::new(4.0, 0.0, 0.0);
+    let vertical = vec3::Vec3::new(0.0, 2.0, 0.0);
+    let origin = vec3::Vec3::new(0.0, 0.0, 0.0);
+
     for j in (0..IMAGE_HEIGHT).rev() {
+        //println!("\rScanlines Remaining: {} ", j);
         for i in 0..IMAGE_WIDTH {
-            let color = vec3::Vec3::new(
-                i as f64  / IMAGE_WIDTH as f64,
-                j as f64 / IMAGE_HEIGHT as f64,
-                0.2
-            );
+            let u = i as f64 / IMAGE_WIDTH as f64;
+            let v = j as f64 / IMAGE_HEIGHT as f64;
+            let r = ray::Ray::new(origin, lower_left_corner + u * horizontal + v * vertical);
+            let color = ray_color(&r);
             color.write_color();
+            //let color = vec3::Vec3::new(
+            //    i as f64  / IMAGE_WIDTH as f64,
+            //    j as f64 / IMAGE_HEIGHT as f64,
+            //    0.2
+            //);
+            //color.write_color();
+
             //let r = i as f32 / IMAGE_WIDTH as f32;
             //let g = j as f32 / IMAGE_HEIGHT as f32;
 
@@ -28,5 +47,9 @@ fn main() {
             //println!("{} {} {}", ir, ig, ib);
         }
     }
+
+    let v1 = vec3::Vec3::new(1.0, 2.0, 3.0);
+    let v2 = vec3::Vec3::new(1.0, 2.0, 3.0);
+    let r = ray::Ray::new(v1, v2);
     
 }
