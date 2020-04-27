@@ -3,7 +3,7 @@ use std::ops::{
     Div, DivAssign, Mul, MulAssign
 };
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub struct Vec3 {
     pub elements: [f64; 3]
 }
@@ -45,12 +45,33 @@ impl Vec3 {
         self.x() * self.x() + self.y() * self.y() + self.z() * self.z()
     }
 
+    pub fn write_color(&self) {
+        println!(
+            "{} {} {}",
+            (255.99 * self.x()) as i32,
+            (255.99 * self.x()) as i32,
+            (255.99 * self.x()) as i32,
+        );
+    }
+
 }
 
 pub fn dot(v1: Vec3, v2: Vec3) -> f64 {
     v1.x() * v2.x() +
         v1.y() * v2.y() +
         v1.z() * v2.z()
+}
+
+pub fn cross(u: Vec3, v: Vec3) -> Vec3 {
+    Vec3::new(
+        u.y() * v.z() - u.z() * v.y(),
+        u.z() * v.x() - u.x() * v.z(),
+        u.x() * v.y() - u.y() * v.x()
+    )
+}
+
+pub fn unit_vector(v: Vec3) -> Vec3 {
+    v / v.length()
 }
 
 impl Add<Vec3> for Vec3 {
