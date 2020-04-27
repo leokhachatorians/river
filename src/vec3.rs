@@ -48,9 +48,9 @@ impl Vec3 {
     pub fn write_color(&self) {
         println!(
             "{} {} {}",
-            (255.99 * self.x()) as i32,
-            (255.99 * self.x()) as i32,
-            (255.99 * self.x()) as i32,
+            (255.99 * self.r()) as i32,
+            (255.99 * self.g()) as i32,
+            (255.99 * self.b()) as i32,
         );
     }
 
