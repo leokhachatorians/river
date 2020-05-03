@@ -7,21 +7,29 @@ const IMAGE_HEIGHT: i32 = 100;
 
 fn ray_color(r: &ray::Ray) -> vec3::Vec3 {
     let v = vec3::Vec3::new(0.0, 0.0, -1.0);
-    if hit_sphere(v, 0.5, r) {
-        return vec3::Vec3::new(1.0, 0.0, 0.0);
+    let t =  hit_sphere(v, 0.5, r);
+    if t > 0.0 {
+        let subtracted_by = vec3::Vec3::new(0.0, 0.0, -1.0);
+        let N = utility::unit_vector(r.at(t) - subtracted_by);
+        return 0.5 * vec3::Vec3::new(N.x() + 1.0, N.y() + 1.0, N.z() + 1.0);
     }
     let unit_direciton = utility::unit_vector(r.direction());
     let t = 0.5 * (unit_direciton.y() + 1.0);
     return (1.0 - t) * vec3::Vec3::new(1.0, 1.0, 1.0) + t * vec3::Vec3::new(0.5, 0.7, 1.0);
 }
 
-fn hit_sphere(center: vec3::Vec3, radius: f64, r: &ray::Ray) -> bool {
+fn hit_sphere(center: vec3::Vec3, radius: f64, r: &ray::Ray) -> f64 {
     let oc = r.origin() - center;
     let a = utility::dot(r.direction(), r.direction());
     let b = 2.0 * utility::dot(oc, r.direction());
     let c = utility::dot(oc, oc) - radius * radius;
     let discriminant = b * b - 4.0 * a * c;
-    return discriminant > 0.0;
+    if discriminant < 0.0 {
+        -1.0
+    }
+    else {
+        (-b - discriminant.sqrt() ) / (2.0 * a)
+    }
 }
 
 fn main() {
