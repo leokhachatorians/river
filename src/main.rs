@@ -20,15 +20,16 @@ fn ray_color(r: &ray::Ray) -> vec3::Vec3 {
 
 fn hit_sphere(center: vec3::Vec3, radius: f64, r: &ray::Ray) -> f64 {
     let oc = r.origin() - center;
-    let a = utility::dot(r.direction(), r.direction());
-    let b = 2.0 * utility::dot(oc, r.direction());
-    let c = utility::dot(oc, oc) - radius * radius;
-    let discriminant = b * b - 4.0 * a * c;
+    let a = r.direction().length_squared();
+    let half_b = utility::dot(oc, r.direction());
+    let c = oc.length_squared() - radius * radius;
+    let discriminant = half_b * half_b - a * c;
+
     if discriminant < 0.0 {
         -1.0
     }
     else {
-        (-b - discriminant.sqrt() ) / (2.0 * a)
+        (-half_b - discriminant.sqrt()) / a
     }
 }
 
