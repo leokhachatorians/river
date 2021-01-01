@@ -1,5 +1,8 @@
 use crate::vec3::Vec3;
 
+pub const PI: f64 = 3.1415926535897932385;
+pub const INFINITY: f64 = f64::INFINITY;
+
 pub fn dot(v1: Vec3, v2: Vec3) -> f64 {
     v1.x() * v2.x() +
         v1.y() * v2.y() +
@@ -16,6 +19,10 @@ pub fn cross(u: Vec3, v: Vec3) -> Vec3 {
 
 pub fn unit_vector(v: Vec3) -> Vec3 {
     v / v.length()
+}
+
+pub fn degrees_to_radians(degrees: f64) -> f64 {
+    degrees * PI / 180.0
 }
 
 

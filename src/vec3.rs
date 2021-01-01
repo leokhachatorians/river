@@ -1,12 +1,16 @@
 use std::ops::{
     Add, AddAssign, Sub, SubAssign,
-    Div, DivAssign, Mul, MulAssign
+    Div, DivAssign, Mul, MulAssign,
+    Neg
 };
 
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub struct Vec3 {
     pub elements: [f64; 3]
 }
+
+pub type Point3 = Vec3;
+pub type Color = Vec3;
 
 impl Vec3 {
     pub fn new(e0: f64, e1: f64, e2: f64) -> Vec3 {
@@ -109,6 +113,20 @@ impl Sub<Vec3> for Vec3 {
                 self.x() - other.x(),
                 self.y() - other.y(),
                 self.z() - other.z()
+            ]
+        }
+    }
+}
+
+impl Neg for Vec3 {
+    type Output = Self;
+
+    fn neg(self) -> Self {
+        Self {
+            elements: [
+                -self.x(),
+                -self.y(),
+                -self.z(),
             ]
         }
     }
