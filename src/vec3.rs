@@ -102,6 +102,19 @@ pub fn random_unit_in_sphere() -> Vec3 {
     }
 }
 
+pub fn random_unit_vector() -> Vec3 {
+    unit_vector(random_unit_in_sphere())
+}
+
+pub fn random_in_hemisphere(normal: Vec3) -> Vec3 {
+    let in_unit_sphere = random_unit_in_sphere();
+
+    if dot(in_unit_sphere, normal) > 0.0 {
+        return in_unit_sphere;
+    }
+    return -in_unit_sphere;
+}
+
 impl Add<Vec3> for Vec3 {
     type Output = Self;
 

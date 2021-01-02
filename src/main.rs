@@ -4,8 +4,10 @@ mod utility;
 mod vec3;
 mod sphere;
 mod hittable;
+mod material;
 
 use crate::camera::{Camera};
+use crate::hittable::Hittable;
 use crate::ray::{Ray};
 use crate::sphere::{Sphere};
 use crate::utility::{
@@ -19,13 +21,16 @@ const IMAGE_HEIGHT: i32 = 100;
 const SAMPLES_PER_PIXEL: i32 = 100;
 const MAX_DEPTH: i32 = 50;
 
-fn ray_color(r: &ray::Ray, world: &hittable::Hitable, depth: i32) -> vec3::Color {
+fn ray_color(r: &ray::Ray, world: &hittable::HittableList, depth: i32) -> vec3::Color {
     if depth <= 0 {
         return Color::new(0.0, 0.0, 0.0);
     }
 
     if let Some(hit) = world.hit(r, 0.001, INFINITY) {
-        let target = hit.p + hit.normal + vec3::random_unit_in_sphere();
+        // Fake Lambertian diffuse
+        //let target = hit.p + hit.normal + vec3::random_unit_vector();
+        // Real?
+        let target = hit.p + vec3::random_in_hemisphere(hit.normal);
         return 0.5 * ray_color(&Ray::new(hit.p, target - hit.p), world, depth - 1)
         //#return 0.5 * (hit.normal + Color::new(1.0, 1.0, 1.0));
     }

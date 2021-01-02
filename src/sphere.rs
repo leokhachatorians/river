@@ -1,4 +1,4 @@
-use crate::hittable::{HitRecord, Hitable};
+use crate::hittable::{HitRecord, Hittable};
 use crate::ray::Ray;
 use crate::utility::{dot};
 use crate::vec3::{Point3, Vec3};
@@ -17,7 +17,7 @@ impl Sphere {
     }
 }
 
-impl Hitable for Sphere {
+impl Hittable for Sphere {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let oc = r.origin() - self.center;
         let a = r.direction().length_squared();

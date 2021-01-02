@@ -1,3 +1,4 @@
+use crate::material::Material;
 use crate::ray::Ray;
 use crate::utility::{dot};
 use crate::vec3::{Point3, Vec3};
@@ -6,16 +7,17 @@ pub struct HitRecord {
     pub p: Point3,
     pub normal: Vec3,
     pub t: f64,
-    pub front_face: bool
+    pub front_face: bool,
+    //pub material: dyn Material
 }
 
-pub trait Hitable {
+pub trait Hittable {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
 }
 
 #[derive(Default)]
 pub struct HittableList {
-   pub objects: Vec<Box<dyn Hitable>>
+   pub objects: Vec<Box<dyn Hittable>>
 }
 
 impl HittableList {
@@ -23,13 +25,13 @@ impl HittableList {
         self.objects.clear();
     }
 
-    pub fn add(&mut self, object: impl Hitable + 'static) {
+    pub fn add(&mut self, object: impl Hittable + 'static) {
         self.objects.push(Box::new(object));
     }
 
 }
 
-impl Hitable for HittableList {
+impl Hittable for HittableList {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let mut hit_anything: Option<HitRecord> = None;
         let mut closest_so_far: f64 = t_max;
