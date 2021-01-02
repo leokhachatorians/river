@@ -4,6 +4,8 @@ use std::ops::{
     Neg
 };
 
+use crate::utility::{random_double, random_double_range};
+
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub struct Vec3 {
     pub elements: [f64; 3]
@@ -58,6 +60,18 @@ impl Vec3 {
         );
     }
 
+    pub fn random() -> Vec3 {
+        Vec3 {
+            elements: [random_double(), random_double(), random_double()]
+        }
+    }
+
+    pub fn random_range(min: f64, max: f64) -> Vec3 {
+        Vec3 {
+            elements: [random_double_range(min, max), random_double_range(min, max), random_double_range(min, max)]
+        }
+    }
+
 }
 
 pub fn dot(v1: Vec3, v2: Vec3) -> f64 {
@@ -76,6 +90,16 @@ pub fn cross(u: Vec3, v: Vec3) -> Vec3 {
 
 pub fn unit_vector(v: Vec3) -> Vec3 {
     v / v.length()
+}
+
+pub fn random_unit_in_sphere() -> Vec3 {
+    loop {
+        let p = Vec3::random_range(-1.0, 1.0);
+        if p.length_squared() >= 1.0 {
+            continue;
+        }
+        return p;
+    }
 }
 
 impl Add<Vec3> for Vec3 {

@@ -17,10 +17,17 @@ use crate::vec3::{Vec3, Color};
 const IMAGE_WIDTH: i32 = 200;
 const IMAGE_HEIGHT: i32 = 100;
 const SAMPLES_PER_PIXEL: i32 = 100;
+const MAX_DEPTH: i32 = 20;
 
-fn ray_color(r: &ray::Ray, world: &hittable::Hitable) -> vec3::Color {
+fn ray_color(r: &ray::Ray, world: &hittable::Hitable, depth: i32) -> vec3::Color {
+    if depth <= 0 {
+        return Color::new(0.0, 0.0, 0.0);
+    }
+
     if let Some(hit) = world.hit(r, 0.0, INFINITY) {
-        return 0.5 * (hit.normal + Color::new(1.0, 1.0, 1.0));
+        let target = hit.p + hit.normal + vec3::random_unit_in_sphere();
+        return 0.5 * ray_color(&Ray::new(hit.p, target - hit.p), world, depth - 1)
+        //#return 0.5 * (hit.normal + Color::new(1.0, 1.0, 1.0));
     }
 
     let unit_direciton = unit_vector(r.direction());
@@ -50,9 +57,9 @@ fn write_color(color: Color, samples_per_pixel: f64) {
 
     let scale = 1.0 / samples_per_pixel;
 
-    r *= scale;
-    g *= scale;
-    b *= scale;
+    r = (r * scale).sqrt();
+    g = (g * scale).sqrt();
+    b = (b * scale).sqrt();
 
     println!(
         "{:?} {:?} {:?}",
@@ -85,8 +92,10 @@ fn main() {
                 let u = (i as f64 + random_double()) / (IMAGE_WIDTH as f64 - 1.0);
                 let v = (j as f64 + random_double()) / (IMAGE_HEIGHT as f64 - 1.0);
                 let r = camera.get_ray(u, v);
-                pixel_color += ray_color(&r, &world);
+                pixel_color += ray_color(&r, &world, MAX_DEPTH);
             }
+
+            //println!("{:?}", pixel_color);
 
             write_color(pixel_color, SAMPLES_PER_PIXEL as f64)
 
