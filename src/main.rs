@@ -17,14 +17,14 @@ use crate::vec3::{Vec3, Color};
 const IMAGE_WIDTH: i32 = 200;
 const IMAGE_HEIGHT: i32 = 100;
 const SAMPLES_PER_PIXEL: i32 = 100;
-const MAX_DEPTH: i32 = 20;
+const MAX_DEPTH: i32 = 50;
 
 fn ray_color(r: &ray::Ray, world: &hittable::Hitable, depth: i32) -> vec3::Color {
     if depth <= 0 {
         return Color::new(0.0, 0.0, 0.0);
     }
 
-    if let Some(hit) = world.hit(r, 0.0, INFINITY) {
+    if let Some(hit) = world.hit(r, 0.001, INFINITY) {
         let target = hit.p + hit.normal + vec3::random_unit_in_sphere();
         return 0.5 * ray_color(&Ray::new(hit.p, target - hit.p), world, depth - 1)
         //#return 0.5 * (hit.normal + Color::new(1.0, 1.0, 1.0));
@@ -82,7 +82,7 @@ fn main() {
     world.add(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5));
     world.add(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0));
 
-    let mut camera = Camera::new(); 
+    let camera = Camera::new();
 
     for j in (0..IMAGE_HEIGHT).rev() {
         //println!("\rScanlines Remaining: {} ", j);
