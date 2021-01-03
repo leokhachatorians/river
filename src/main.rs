@@ -8,7 +8,7 @@ mod material;
 
 use crate::camera::{Camera};
 use crate::hittable::Hittable;
-use crate::material::{Lambertian, Metal};
+use crate::material::{Lambertian, Metal, Dielectric};
 use crate::ray::{Ray};
 use crate::sphere::{Sphere};
 use crate::utility::{
@@ -42,13 +42,6 @@ fn ray_color(r: &ray::Ray, world: &hittable::HittableList, depth: i32) -> vec3::
             }
             return Color::new(0.0, 0.0, 0.0);
         }
-
-        //if hit.material.scatter(&r, &hit, &mut attenuation, &mut scattered) {
-        //    return attenuation * ray_color(&scattered, world, depth - 1);
-        //}
-        
-        //let target = hit.p + vec3::random_in_hemisphere(hit.normal);
-        //return 0.5 * ray_color(&Ray::new(hit.p, target - hit.p), world, depth - 1)
     }
 
     let unit_direciton = unit_vector(r.direction());
@@ -100,9 +93,11 @@ fn main() {
     let origin = Vec3::new(0.0, 0.0, 0.0);
 
     let material_ground = Lambertian::new(Color::new(0.8, 0.8, 0.0));
-    let material_center = Lambertian::new(Color::new(0.7, 0.3, 0.3));
-    let material_left = Metal::new(Color::new(0.8, 0.8, 0.8));
-    let material_right = Metal::new(Color::new(0.8, 0.6, 0.2));
+    //let material_center = Lambertian::new(Color::new(0.7, 0.3, 0.3));
+    let material_center = Dielectric::new(1.5);
+    //let material_left = Metal::new(Color::new(0.8, 0.8, 0.8), 0.3);
+    let material_left = Dielectric::new(1.5);
+    let material_right = Metal::new(Color::new(0.8, 0.6, 0.2), 1.0);
 
     let mut world: hittable::HittableList = Default::default();
     world.add(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0, material_ground));
