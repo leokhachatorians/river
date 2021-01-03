@@ -109,9 +109,15 @@ fn main() {
     //world.add(Sphere::new(Point3::new(-R, 0.0, -1.0), R, material_left));
     //world.add(Sphere::new(Point3::new(R, 0.0, -1.0), R, material_right));
 
+    let look_from: Point3 = Point3::new(3.0, 3.0, 2.0);
+    let look_at: Point3 = Point3::new(0.0, 0.0, -1.0);
+    let vup: Vec3 = Vec3::new(0.0, 1.0, 0.0);
+    let dist_to_focus: f64 = (look_from - look_at).length();
+    let aperture: f64 = 2.0;
+
     let camera = Camera::new(
-        Point3::new(-2.0, 2.0, 1.0), Point3::new(0.0, 0.0, -1.0), Vec3::new(0.0, 1.0, 0.0),
-        90.0, ASPECT_RATIO
+        look_from, look_at, vup,
+        20.0, ASPECT_RATIO, aperture, dist_to_focus
     );
 
     for j in (0..IMAGE_HEIGHT).rev() {
