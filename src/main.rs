@@ -87,11 +87,6 @@ fn main() {
 
     println!("P3\n{} {}\n255", IMAGE_WIDTH, IMAGE_HEIGHT);
 
-    let lower_left_corner = Vec3::new(-2.0, -1.0, -1.0);
-    let horizontal = Vec3::new(4.0, 0.0, 0.0);
-    let vertical = Vec3::new(0.0, 2.0, 0.0);
-    let origin = Vec3::new(0.0, 0.0, 0.0);
-
     let material_ground = Lambertian::new(Color::new(0.8, 0.8, 0.0));
     let material_center = Lambertian::new(Color::new(0.1, 0.2, 0.5));
     let material_left = Dielectric::new(1.5);
@@ -116,15 +111,7 @@ fn main() {
                 pixel_color += ray_color(&r, &world, MAX_DEPTH);
             }
 
-            //println!("{:?}", pixel_color);
-
             write_color(pixel_color, SAMPLES_PER_PIXEL as f64)
-
-            //let u = i as f64 / IMAGE_WIDTH as f64;
-            //let v = j as f64 / IMAGE_HEIGHT as f64;
-            //let r = Ray::new(origin, lower_left_corner + u * horizontal + v * vertical);
-            //let color = ray_color(&r, &world);
-            //color.write_color();
         }
     }
 }
