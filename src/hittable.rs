@@ -3,12 +3,12 @@ use crate::ray::Ray;
 use crate::utility::{dot};
 use crate::vec3::{Point3, Vec3};
 
-pub struct HitRecord {
+pub struct HitRecord<'a> {
     pub p: Point3,
     pub normal: Vec3,
     pub t: f64,
     pub front_face: bool,
-    //pub material: dyn Material
+    pub material: &'a Material
 }
 
 pub trait Hittable {
@@ -46,7 +46,7 @@ impl Hittable for HittableList {
     }
 }
 
-impl HitRecord {
+impl HitRecord<'_> {
     pub fn set_face_normal(&mut self, r: &Ray, outward_normal: Vec3) {
         self.front_face = dot(r.direction(), outward_normal) < 0.0;
         self.normal = if self.front_face {
