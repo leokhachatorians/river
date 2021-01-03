@@ -14,9 +14,11 @@ use crate::sphere::{Sphere};
 use crate::utility::{
     INFINITY, unit_vector, dot,
     random_double, random_double_range, clamp,
+    PI
 };
-use crate::vec3::{Vec3, Color};
+use crate::vec3::{Vec3, Color, Point3};
 
+const ASPECT_RATIO: f64 = 16.0 / 9.0;
 const IMAGE_WIDTH: i32 = 200;
 const IMAGE_HEIGHT: i32 = 100;
 const SAMPLES_PER_PIXEL: i32 = 100;
@@ -87,19 +89,27 @@ fn main() {
 
     println!("P3\n{} {}\n255", IMAGE_WIDTH, IMAGE_HEIGHT);
 
-    let material_ground = Lambertian::new(Color::new(0.8, 0.8, 0.0));
-    let material_center = Lambertian::new(Color::new(0.1, 0.2, 0.5));
-    let material_left = Dielectric::new(1.5);
-    let material_right = Metal::new(Color::new(0.8, 0.6, 0.2), 0.0);
+    let R: f64 = (PI / 4.0).cos();
+
+    //let material_ground = Lambertian::new(Color::new(0.8, 0.8, 0.0));
+    //let material_center = Lambertian::new(Color::new(0.1, 0.2, 0.5));
+    //let material_left = Dielectric::new(1.5);
+    //let material_right = Metal::new(Color::new(0.8, 0.6, 0.2), 0.0);
+    
+    let material_left = Lambertian::new(Color::new(0.0, 0.0, 1.0));
+    let material_right = Lambertian::new(Color::new(1.0, 0.0, 0.0));
 
     let mut world: hittable::HittableList = Default::default();
-    world.add(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0, material_ground));
-    world.add(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5, material_center));
-    world.add(Sphere::new(Vec3::new(-1.0, 0.0, -1.0), 0.5, material_left));
-    world.add(Sphere::new(Vec3::new(-1.0, 0.0, -1.0), -0.4, material_left));
-    world.add(Sphere::new(Vec3::new(1.0, 0.0, -1.0), 0.5, material_right));
+    //world.add(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0, material_ground));
+    //world.add(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5, material_center));
+    //world.add(Sphere::new(Vec3::new(-1.0, 0.0, -1.0), 0.5, material_left));
+    //world.add(Sphere::new(Vec3::new(-1.0, 0.0, -1.0), -0.4, material_left));
+    //world.add(Sphere::new(Vec3::new(1.0, 0.0, -1.0), 0.5, material_right));
+    
+    world.add(Sphere::new(Point3::new(-R, 0.0, -1.0), R, material_left));
+    world.add(Sphere::new(Point3::new(R, 0.0, -1.0), R, material_right));
 
-    let camera = Camera::new();
+    let camera = Camera::new(90.0, ASPECT_RATIO);
 
     for j in (0..IMAGE_HEIGHT).rev() {
         //println!("\rScanlines Remaining: {} ", j);
