@@ -91,25 +91,28 @@ fn main() {
 
     let R: f64 = (PI / 4.0).cos();
 
-    //let material_ground = Lambertian::new(Color::new(0.8, 0.8, 0.0));
-    //let material_center = Lambertian::new(Color::new(0.1, 0.2, 0.5));
-    //let material_left = Dielectric::new(1.5);
-    //let material_right = Metal::new(Color::new(0.8, 0.6, 0.2), 0.0);
+    let material_ground = Lambertian::new(Color::new(0.8, 0.8, 0.0));
+    let material_center = Lambertian::new(Color::new(0.1, 0.2, 0.5));
+    let material_left = Dielectric::new(1.5);
+    let material_right = Metal::new(Color::new(0.8, 0.6, 0.2), 0.0);
     
-    let material_left = Lambertian::new(Color::new(0.0, 0.0, 1.0));
-    let material_right = Lambertian::new(Color::new(1.0, 0.0, 0.0));
+    //let material_left = Lambertian::new(Color::new(0.0, 0.0, 1.0));
+    //let material_right = Lambertian::new(Color::new(1.0, 0.0, 0.0));
 
     let mut world: hittable::HittableList = Default::default();
-    //world.add(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0, material_ground));
-    //world.add(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5, material_center));
-    //world.add(Sphere::new(Vec3::new(-1.0, 0.0, -1.0), 0.5, material_left));
-    //world.add(Sphere::new(Vec3::new(-1.0, 0.0, -1.0), -0.4, material_left));
-    //world.add(Sphere::new(Vec3::new(1.0, 0.0, -1.0), 0.5, material_right));
+    world.add(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0, material_ground));
+    world.add(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5, material_center));
+    world.add(Sphere::new(Vec3::new(-1.0, 0.0, -1.0), 0.5, material_left));
+    world.add(Sphere::new(Vec3::new(-1.0, 0.0, -1.0), -0.4, material_left));
+    world.add(Sphere::new(Vec3::new(1.0, 0.0, -1.0), 0.5, material_right));
     
-    world.add(Sphere::new(Point3::new(-R, 0.0, -1.0), R, material_left));
-    world.add(Sphere::new(Point3::new(R, 0.0, -1.0), R, material_right));
+    //world.add(Sphere::new(Point3::new(-R, 0.0, -1.0), R, material_left));
+    //world.add(Sphere::new(Point3::new(R, 0.0, -1.0), R, material_right));
 
-    let camera = Camera::new(90.0, ASPECT_RATIO);
+    let camera = Camera::new(
+        Point3::new(-2.0, 2.0, 1.0), Point3::new(0.0, 0.0, -1.0), Vec3::new(0.0, 1.0, 0.0),
+        90.0, ASPECT_RATIO
+    );
 
     for j in (0..IMAGE_HEIGHT).rev() {
         //println!("\rScanlines Remaining: {} ", j);
