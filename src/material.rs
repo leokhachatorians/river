@@ -69,7 +69,6 @@ impl Material for Lambertian {
         let mut scattered = Ray::new(hit.p, scatter_direction);
         let mut attenuation = self.albedo;
         Some((scattered, attenuation, true))
-        //return true;
     }
 }
 
@@ -83,8 +82,26 @@ impl Material for Dielectric {
         };
 
         let unit_direction = unit_vector(r_in.direction());
-        let refracted = refract(unit_direction, hit.normal, refraction_ratio);
-        let scattered = Ray::new(hit.p, refracted);
+
+        let dot_product = dot(-unit_direction, hit.normal);
+        let cos_theta: f64 = if dot_product < 1.0 {
+            dot_product
+        } else {
+            1.0
+        };
+
+        let sin_theta: f64 = (1.0 - cos_theta * cos_theta).sqrt();
+
+        let cannot_refract: bool = refraction_ratio * sin_theta > 1.0;
+        let direction: Vec3;
+
+        if cannot_refract {
+            direction = reflect(unit_direction, hit.normal);
+        } else {
+            direction = refract(unit_direction, hit.normal, refraction_ratio);
+        }
+
+        let scattered = Ray::new(hit.p, direction);
         Some((scattered, attenuation, true))
     }
 }
