@@ -20,7 +20,7 @@ use crate::vec3::{Vec3, Color, Point3};
 
 const IMAGE_WIDTH: i32 = 1200;
 const ASPECT_RATIO: f64 = 3.0 / 2.0;
-const IMAGE_HEIGHT: i32 = IMAGE_WIDTH / ASPECT_RATIO as i32;
+const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f64 / ASPECT_RATIO) as i32;
 const SAMPLES_PER_PIXEL: i32 = 100;
 const MAX_DEPTH: i32 = 50;
 
@@ -139,30 +139,8 @@ fn scene() -> HittableList {
 }
 
 fn main() {
-    //let aspect_ratio: f64 = 3.0 / 2.0;
-
     println!("P3\n{} {}\n255", IMAGE_WIDTH, IMAGE_HEIGHT);
 
-    //let R: f64 = (PI / 4.0).cos();
-
-    //let material_ground = Lambertian::new(Color::new(0.8, 0.8, 0.0));
-    //let material_center = Lambertian::new(Color::new(0.1, 0.2, 0.5));
-    //let material_left = Dielectric::new(1.5);
-    //let material_right = Metal::new(Color::new(0.8, 0.6, 0.2), 0.0);
-    //
-    ////let material_left = Lambertian::new(Color::new(0.0, 0.0, 1.0));
-    ////let material_right = Lambertian::new(Color::new(1.0, 0.0, 0.0));
-
-    //let mut world: hittable::HittableList = Default::default();
-    //world.add(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0, material_ground));
-    //world.add(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5, material_center));
-    //world.add(Sphere::new(Vec3::new(-1.0, 0.0, -1.0), 0.5, material_left));
-    //world.add(Sphere::new(Vec3::new(-1.0, 0.0, -1.0), -0.4, material_left));
-    //world.add(Sphere::new(Vec3::new(1.0, 0.0, -1.0), 0.5, material_right));
-    
-    //world.add(Sphere::new(Point3::new(-R, 0.0, -1.0), R, material_left));
-    //world.add(Sphere::new(Point3::new(R, 0.0, -1.0), R, material_right));
-    
     // World
     let world = scene();
 
@@ -180,7 +158,6 @@ fn main() {
     // Render
 
     for j in (0..IMAGE_HEIGHT).rev() {
-        //println!("\rScanlines Remaining: {} ", j);
         for i in 0..IMAGE_WIDTH {
             let mut pixel_color = Color::new(0.0, 0.0, 0.0);
             for s in 0..SAMPLES_PER_PIXEL {
@@ -189,7 +166,6 @@ fn main() {
                 let r = camera.get_ray(u, v);
                 pixel_color += ray_color(&r, &world, MAX_DEPTH);
             }
-
             write_color(pixel_color, SAMPLES_PER_PIXEL as f64)
         }
     }
