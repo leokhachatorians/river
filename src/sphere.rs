@@ -4,14 +4,14 @@ use crate::ray::Ray;
 use crate::utility::{dot};
 use crate::vec3::{Point3, Vec3};
 
-pub struct Sphere<M: Material> {
+pub struct Sphere {
     center: Point3,
     radius: f64,
-    material: M,
+    material: Material,
 }
 
-impl<M: Material> Sphere<M> {
-    pub fn new(center: Point3, radius: f64, material: M) -> Self {
+impl Sphere {
+    pub fn new(center: Point3, radius: f64, material: Material) -> Self {
         Sphere {
             center: center,
             radius: radius,
@@ -20,7 +20,7 @@ impl<M: Material> Sphere<M> {
     }
 }
 
-impl<M: Material> Hittable for Sphere<M> {
+impl Hittable for Sphere {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let oc = r.origin() - self.center;
         let a = r.direction().length_squared();

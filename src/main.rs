@@ -8,7 +8,8 @@ mod material;
 
 use crate::camera::{Camera};
 use crate::hittable::{Hittable, HittableList};
-use crate::material::{Lambertian, Metal, Dielectric};
+//use crate::material::{Lambertian, Metal, Dielectric};
+use crate::material::{Material};
 use crate::sphere::{Sphere};
 use crate::utility::{
     INFINITY, unit_vector, dot,
@@ -28,9 +29,8 @@ fn ray_color(r: &ray::Ray, world: &hittable::HittableList, depth: i32) -> vec3::
     }
 
     if let Some(hit) = world.hit(r, 0.001, INFINITY) {
-        // Fake Lambertian diffuse
         // Real?
-        //
+
         if let Some(scatter_tuple) = hit.material.scatter(&r, &hit) {
             let (scattered, attenuation, hit) = scatter_tuple;
 
@@ -82,7 +82,9 @@ fn write_color(color: Color, samples_per_pixel: f64) {
 
 fn scene() -> HittableList {
     let mut world: hittable::HittableList = Default::default();
-    let material_ground = Lambertian::new(Color::new(0.5, 0.5, 0.5));
+    let material_ground = Material::Lambertian {
+        albedo: Color::new(0.5, 0.5, 0.5)
+    };
 
     world.add(Sphere::new(Point3::new(0.0, -1000.0, 0.0), 1000.0, material_ground));
 
@@ -104,27 +106,45 @@ fn scene() -> HittableList {
                     // diffuse
                     albedo = Color::random() * Color::random();
                     //sphere_material = Lambertian::new(albedo);
-                    world.add(Sphere::new(center, 0.2, Lambertian::new(albedo)));
+                    world.add(
+                        Sphere::new(center, 0.2, Material::Lambertian {
+                            albedo: albedo
+                        })
+                    );
                 }
                 else if choose_mat < 0.95 {
                     // metal
                     albedo = Color::random_range(0.5, 1.0);
                     fuzz = random_double();
                     //sphere_material = Metal::new(albedo, fuzz);
-                    world.add(Sphere::new(center, 0.2, Metal::new(albedo, fuzz)));
+                    world.add(
+                        Sphere::new(center, 0.2, Material::Metal {
+                            albedo: albedo, fuzz: fuzz
+                        })
+                    );
                 }
                 else {
                     // glass
                     //sphere_material = Dielectric::new(1.5);
-                    world.add(Sphere::new(center, 0.2, Dielectric::new(1.5)));
+                    world.add(
+                        Sphere::new(center, 0.2, Material::Dielectric {
+                            index_of_refraction: 1.5
+                        })
+                    );
                 }
             }
         }
     }
 
-    let material_1 = Dielectric::new(1.5);
-    let material_2 = Lambertian::new(Color::new(0.4, 0.2, 0.1));
-    let material_3 = Metal::new(Color::new(0.7, 0.6, 0.5), 0.0);
+    let material_1 = Material::Dielectric {
+        index_of_refraction: 1.5
+    };
+    let material_2 = Material::Lambertian {
+        albedo: Color::new(0.4, 0.2, 0.1)
+    };
+    let material_3 = Material::Metal {
+        albedo: Color::new(0.7, 0.6, 0.5), fuzz: 0.0
+    };
 
     world.add(Sphere::new(Point3::new(0.0, 1.0, 0.0), 1.0, material_1));
     world.add(Sphere::new(Point3::new(-4.0, 1.0, 0.0), 1.0, material_2));
