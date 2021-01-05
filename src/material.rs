@@ -24,7 +24,6 @@ pub struct Lambertian {
     albedo: Color
 }
 
-#[derive(Copy, Clone)]
 pub struct Dielectric {
     index_of_refraction: f64
 }
