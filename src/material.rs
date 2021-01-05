@@ -59,8 +59,8 @@ impl Material for Metal {
         &'a self, r_in: &Ray, hit: &HitRecord,
     ) -> Option<(Ray, Color, bool)> {
         let reflected: Vec3 = reflect(unit_vector(r_in.direction()), hit.normal);
-        let mut scattered = Ray::new(hit.p, reflected + self.fuzz * random_unit_in_sphere());
-        let mut attenuation = self.albedo;
+        let scattered = Ray::new(hit.p, reflected + self.fuzz * random_unit_in_sphere());
+        let attenuation = self.albedo;
         Some((scattered, attenuation, dot(scattered.direction(), hit.normal) > 0.0))
     }
 }
@@ -75,8 +75,8 @@ impl Material for Lambertian {
             scatter_direction = hit.normal;
         }
 
-        let mut scattered = Ray::new(hit.p, scatter_direction);
-        let mut attenuation = self.albedo;
+        let scattered = Ray::new(hit.p, scatter_direction);
+        let attenuation = self.albedo;
         Some((scattered, attenuation, true))
     }
 }
@@ -104,7 +104,7 @@ impl Material for Dielectric {
         let cannot_refract: bool = refraction_ratio * sin_theta > 1.0;
         let direction: Vec3;
 
-        if (cannot_refract || Dielectric::reflectance(cos_theta, refraction_ratio) > random_double()) {
+        if cannot_refract || Dielectric::reflectance(cos_theta, refraction_ratio) > random_double() {
             direction = reflect(unit_direction, hit.normal);
         } else {
             direction = refract(unit_direction, hit.normal, refraction_ratio);

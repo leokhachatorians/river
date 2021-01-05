@@ -8,17 +8,15 @@ mod material;
 
 use crate::camera::{Camera};
 use crate::hittable::{Hittable, HittableList};
-use crate::material::{Lambertian, Metal, Dielectric, Material};
-use crate::ray::{Ray};
+use crate::material::{Lambertian, Metal, Dielectric};
 use crate::sphere::{Sphere};
 use crate::utility::{
     INFINITY, unit_vector, dot,
-    random_double, random_double_range, clamp,
-    PI
+    random_double, clamp,
 };
 use crate::vec3::{Vec3, Color, Point3};
 
-const IMAGE_WIDTH: i32 = 1200;
+const IMAGE_WIDTH: i32 = 200;
 const ASPECT_RATIO: f64 = 3.0 / 2.0;
 const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f64 / ASPECT_RATIO) as i32;
 const SAMPLES_PER_PIXEL: i32 = 100;
@@ -31,13 +29,10 @@ fn ray_color(r: &ray::Ray, world: &hittable::HittableList, depth: i32) -> vec3::
 
     if let Some(hit) = world.hit(r, 0.001, INFINITY) {
         // Fake Lambertian diffuse
-        //let target = hit.p + hit.normal + vec3::random_unit_vector();
         // Real?
-        let mut scattered: Ray;
-        let mut attenuation: Color;
-
+        //
         if let Some(scatter_tuple) = hit.material.scatter(&r, &hit) {
-            let (mut scattered, mut attenuation, hit) = scatter_tuple;
+            let (scattered, attenuation, hit) = scatter_tuple;
 
             if hit {
                 return attenuation * ray_color(&scattered, world, depth -1 );
@@ -102,8 +97,8 @@ fn scene() -> HittableList {
 
             if (center - Point3::new(4.0, 0.2, 0.0)).length() > 0.9 {
                 //let mut sphere_material;
-                let mut albedo: Color;
-                let mut fuzz: f64;
+                let albedo: Color;
+                let fuzz: f64;
 
                 if choose_mat < 0.8 {
                     // diffuse

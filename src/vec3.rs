@@ -1,4 +1,3 @@
-use std::cmp;
 use std::ops::{
     Add, AddAssign, Sub, SubAssign,
     Div, DivAssign, Mul, MulAssign,
