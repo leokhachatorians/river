@@ -1,10 +1,10 @@
 use rand::Rng;
 use crate::vec3::Vec3;
 
-pub const PI: f64 = 3.1415926535897932385;
-pub const INFINITY: f64 = f64::INFINITY;
+pub const PI: f32 = 3.1415926535897932385;
+pub const INFINITY: f32 = f32::INFINITY;
 
-pub fn dot(v1: Vec3, v2: Vec3) -> f64 {
+pub fn dot(v1: Vec3, v2: Vec3) -> f32 {
     v1.x() * v2.x() +
         v1.y() * v2.y() +
         v1.z() * v2.z()
@@ -22,21 +22,21 @@ pub fn unit_vector(v: Vec3) -> Vec3 {
     v / v.length()
 }
 
-pub fn degrees_to_radians(degrees: f64) -> f64 {
+pub fn degrees_to_radians(degrees: f32) -> f32 {
     degrees * PI / 180.0
 }
 
-pub fn random_double() -> f64 {
+pub fn random_double() -> f32 {
     let mut rng = rand::thread_rng();
-    rng.gen::<f64>()
+    rng.gen::<f32>()
 }
 
-pub fn random_double_range(min: f64, max:f64) -> f64 {
+pub fn random_double_range(min: f32, max:f32) -> f32 {
     let mut rng = rand::thread_rng();
     rng.gen_range(min..max)
 }
 
-pub fn clamp(x: f64, min: f64, max: f64) -> f64 {
+pub fn clamp(x: f32, min: f32, max: f32) -> f32 {
     if x < min {
         return min;
     }

@@ -18,8 +18,8 @@ use crate::utility::{
 use crate::vec3::{Vec3, Color, Point3};
 
 const IMAGE_WIDTH: i32 = 200;
-const ASPECT_RATIO: f64 = 3.0 / 2.0;
-const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f64 / ASPECT_RATIO) as i32;
+const ASPECT_RATIO: f32 = 3.0 / 2.0;
+const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f32 / ASPECT_RATIO) as i32;
 const SAMPLES_PER_PIXEL: i32 = 100;
 const MAX_DEPTH: i32 = 50;
 
@@ -46,7 +46,7 @@ fn ray_color(r: &ray::Ray, world: &hittable::HittableList, depth: i32) -> vec3::
     return (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0);
 }
 
-fn hit_sphere(center: vec3::Vec3, radius: f64, r: &ray::Ray) -> f64 {
+fn hit_sphere(center: vec3::Vec3, radius: f32, r: &ray::Ray) -> f32 {
     let oc = r.origin() - center;
     let a = r.direction().length_squared();
     let half_b = dot(oc, r.direction());
@@ -61,7 +61,7 @@ fn hit_sphere(center: vec3::Vec3, radius: f64, r: &ray::Ray) -> f64 {
     }
 }
 
-fn write_color(color: Color, samples_per_pixel: f64) {
+fn write_color(color: Color, samples_per_pixel: f32) {
     let mut r = color.x();
     let mut g = color.y();
     let mut b = color.z();
@@ -92,15 +92,15 @@ fn scene() -> HittableList {
         for b in -11..11 {
             let choose_mat = random_double();
             let center: Point3 = Point3::new(
-                i as f64 + 0.9*random_double(),
+                i as f32 + 0.9*random_double(),
                 0.2,
-                b as f64 + 0.9*random_double()
+                b as f32 + 0.9*random_double()
             );
 
             if (center - Point3::new(4.0, 0.2, 0.0)).length() > 0.9 {
                 //let mut sphere_material;
                 let albedo: Color;
-                let fuzz: f64;
+                let fuzz: f32;
 
                 if choose_mat < 0.8 {
                     // diffuse
@@ -162,8 +162,8 @@ fn main() {
     let look_from: Point3 = Point3::new(13.0, 2.0, 3.0);
     let look_at: Point3 = Point3::new(0.0, 0.0, 0.0);
     let vup: Vec3 = Vec3::new(0.0, 1.0, 0.0);
-    let dist_to_focus: f64 = 10.0;
-    let aperture: f64 = 0.1;
+    let dist_to_focus: f32 = 10.0;
+    let aperture: f32 = 0.1;
 
     let camera = Camera::new(
         look_from, look_at, vup,
@@ -176,12 +176,12 @@ fn main() {
         for i in 0..IMAGE_WIDTH {
             let mut pixel_color = Color::new(0.0, 0.0, 0.0);
             for s in 0..SAMPLES_PER_PIXEL {
-                let u = (i as f64 + random_double()) / (IMAGE_WIDTH as f64 - 1.0);
-                let v = (j as f64 + random_double()) / (IMAGE_HEIGHT as f64 - 1.0);
+                let u = (i as f32 + random_double()) / (IMAGE_WIDTH as f32 - 1.0);
+                let v = (j as f32 + random_double()) / (IMAGE_HEIGHT as f32 - 1.0);
                 let r = camera.get_ray(u, v);
                 pixel_color += ray_color(&r, &world, MAX_DEPTH);
             }
-            write_color(pixel_color, SAMPLES_PER_PIXEL as f64)
+            write_color(pixel_color, SAMPLES_PER_PIXEL as f32)
         }
     }
 }

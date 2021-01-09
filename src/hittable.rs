@@ -6,13 +6,13 @@ use crate::vec3::{Point3, Vec3};
 pub struct HitRecord<'a> {
     pub p: Point3,
     pub normal: Vec3,
-    pub t: f64,
+    pub t: f32,
     pub front_face: bool,
     pub material: &'a Material
 }
 
 pub trait Hittable {
-    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
+    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord>;
 }
 
 #[derive(Default)]
@@ -32,9 +32,9 @@ impl HittableList {
 }
 
 impl Hittable for HittableList {
-    fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn hit(&self, r: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
         let mut hit_anything: Option<HitRecord> = None;
-        let mut closest_so_far: f64 = t_max;
+        let mut closest_so_far: f32 = t_max;
 
         for object in self.objects.iter() {
             if let Some(hit) = object.hit(&r, t_min, closest_so_far) {
