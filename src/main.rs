@@ -16,6 +16,9 @@ use crate::utility::{
 };
 use crate::vec3::{Vec3, Color, Point3};
 
+use rayon::prelude::*;
+use std::fs;
+
 const IMAGE_WIDTH: i32 = 200;
 const ASPECT_RATIO: f32 = 3.0 / 2.0;
 const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f32 / ASPECT_RATIO) as i32;
@@ -45,32 +48,15 @@ fn ray_color(r: &ray::Ray, world: &hittable::HittableList, depth: i32) -> vec3::
     return (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0);
 }
 
-fn write_color(color: Color, samples_per_pixel: f32) {
-    let mut r = color.x();
-    let mut g = color.y();
-    let mut b = color.z();
-
-    let scale = 1.0 / samples_per_pixel;
-
-    r = (r * scale).sqrt();
-    g = (g * scale).sqrt();
-    b = (b * scale).sqrt();
-
-    println!(
-        "{:?} {:?} {:?}",
-        (255.99 * clamp(r, 0.0, 0.999)) as i32,
-        (255.99 * clamp(g, 0.0, 0.999)) as i32,
-        (255.99 * clamp(b, 0.0, 0.999)) as i32,
-    );
-}
-
 fn scene() -> HittableList {
-    let mut world: hittable::HittableList = Default::default();
+    //let mut world: hittable::HittableList = Default::default();
     let material_ground = Material::Lambertian {
         albedo: Color::new(0.5, 0.5, 0.5)
     };
 
-    world.add(Sphere::new(Point3::new(0.0, -1000.0, 0.0), 1000.0, material_ground));
+    let mut objects: Vec<Box<dyn Hittable>> = vec![];
+
+    objects.push(Box::new(Sphere::new(Point3::new(0.0, -1000.0, 0.0), 1000.0, material_ground)));
 
     for i in -11..11 {
         for b in -11..11 {
@@ -90,31 +76,31 @@ fn scene() -> HittableList {
                     // diffuse
                     albedo = Color::random() * Color::random();
                     //sphere_material = Lambertian::new(albedo);
-                    world.add(
+                    objects.push(Box::new(
                         Sphere::new(center, 0.2, Material::Lambertian {
                             albedo: albedo
                         })
-                    );
+                    ));
                 }
                 else if choose_mat < 0.95 {
                     // metal
                     albedo = Color::random_range(0.5, 1.0);
                     fuzz = random_double();
                     //sphere_material = Metal::new(albedo, fuzz);
-                    world.add(
+                    objects.push(Box::new(
                         Sphere::new(center, 0.2, Material::Metal {
                             albedo: albedo, fuzz: fuzz
                         })
-                    );
+                    ));
                 }
                 else {
                     // glass
                     //sphere_material = Dielectric::new(1.5);
-                    world.add(
+                    objects.push(Box::new(
                         Sphere::new(center, 0.2, Material::Dielectric {
                             index_of_refraction: 1.5
                         })
-                    );
+                    ));
                 }
             }
         }
@@ -130,16 +116,14 @@ fn scene() -> HittableList {
         albedo: Color::new(0.7, 0.6, 0.5), fuzz: 0.0
     };
 
-    world.add(Sphere::new(Point3::new(0.0, 1.0, 0.0), 1.0, material_1));
-    world.add(Sphere::new(Point3::new(-4.0, 1.0, 0.0), 1.0, material_2));
-    world.add(Sphere::new(Point3::new(4.0, 1.0, 0.0), 1.0, material_3));
+    objects.push(Box::new(Sphere::new(Point3::new(0.0, 1.0, 0.0), 1.0, material_1)));
+    objects.push(Box::new(Sphere::new(Point3::new(-4.0, 1.0, 0.0), 1.0, material_2)));
+    objects.push(Box::new(Sphere::new(Point3::new(4.0, 1.0, 0.0), 1.0, material_3)));
 
-    world
+    HittableList::new(objects)
 }
 
 fn main() {
-    println!("P3\n{} {}\n255", IMAGE_WIDTH, IMAGE_HEIGHT);
-
     // World
     let world = scene();
 
@@ -155,17 +139,38 @@ fn main() {
     );
 
     // Render
+    let pixels = (0..IMAGE_HEIGHT)
+        .into_par_iter()
+        .rev()
+        .map(|j| {
+            (0..IMAGE_WIDTH)
+                .into_par_iter()
+                .map(|i| {
+                    let mut col = Color::new(0.0, 0.0, 0.0);
+                    for _ in 0..SAMPLES_PER_PIXEL {
+                        let u = (i as f32 + random_double()) / (IMAGE_WIDTH as f32 - 1.0);
+                        let v = (j as f32 + random_double()) / (IMAGE_HEIGHT as f32 - 1.0);
+                        let r = camera.get_ray(u, v);
+                        col += ray_color(&r, &world, MAX_DEPTH);
+                    }
+                    col =  col / SAMPLES_PER_PIXEL as f32;
+                    col = Color::new(col.x().sqrt(), col.y().sqrt(), col.z().sqrt());
+                    let ir = 255.99 * clamp(col.x(), 0.0, 0.999);
+                    let ig = 255.99 * clamp(col.y(), 0.0, 0.999);
+                    let ib = 255.99 * clamp(col.z(), 0.0, 0.999);
+                    format!("{} {} {}\n", ir as i32, ig as i32, ib as i32)
+                })
+            .collect::<Vec<String>>()
+            .join("")
+        })
+    .collect::<Vec<String>>()
+    .join("");
 
-    for j in (0..IMAGE_HEIGHT).rev() {
-        for i in 0..IMAGE_WIDTH {
-            let mut pixel_color = Color::new(0.0, 0.0, 0.0);
-            for s in 0..SAMPLES_PER_PIXEL {
-                let u = (i as f32 + random_double()) / (IMAGE_WIDTH as f32 - 1.0);
-                let v = (j as f32 + random_double()) / (IMAGE_HEIGHT as f32 - 1.0);
-                let r = camera.get_ray(u, v);
-                pixel_color += ray_color(&r, &world, MAX_DEPTH);
-            }
-            write_color(pixel_color, SAMPLES_PER_PIXEL as f32)
-        }
-    }
+    let mut pic = format!("P3\n{} {}\n255\n", IMAGE_WIDTH, IMAGE_HEIGHT);
+    pic = format!("{}{}", &pic, pixels);
+
+    if fs::write("output.ppm", pic).is_err() {
+        eprintln!("Error generating image");
+    };
+
 }
