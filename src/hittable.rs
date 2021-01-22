@@ -24,7 +24,6 @@ impl HittableList {
     pub fn add(&mut self, object: impl Hittable + 'static) {
         self.objects.push(Box::new(object));
     }
-
 }
 
 impl Hittable for HittableList {
