@@ -19,10 +19,10 @@ use crate::vec3::{Vec3, Color, Point3};
 use rayon::prelude::*;
 use std::fs;
 
-const IMAGE_WIDTH: i32 = 200;
+const IMAGE_WIDTH: i32 = 800;
 const ASPECT_RATIO: f32 = 3.0 / 2.0;
 const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f32 / ASPECT_RATIO) as i32;
-const SAMPLES_PER_PIXEL: i32 = 100;
+const SAMPLES_PER_PIXEL: i32 = 50;
 const MAX_DEPTH: i32 = 50;
 
 fn ray_color(r: &ray::Ray, world: &hittable::HittableList, depth: i32) -> vec3::Color {
@@ -123,54 +123,66 @@ fn scene() -> HittableList {
     HittableList::new(objects)
 }
 
+
 fn main() {
     // World
     let world = scene();
+    let mut x = 13.0;
+    let mut z = 3.0;
 
-    let look_from: Point3 = Point3::new(13.0, 2.0, 3.0);
-    let look_at: Point3 = Point3::new(0.0, 0.0, 0.0);
-    let vup: Vec3 = Vec3::new(0.0, 1.0, 0.0);
-    let dist_to_focus: f32 = 10.0;
-    let aperture: f32 = 0.1;
+    let x_increment = 0.05;
+    let z_increment = 0.1;
 
-    let camera = Camera::new(
-        look_from, look_at, vup,
-        20.0, ASPECT_RATIO, aperture, dist_to_focus
-    );
+    for iteration in 0..20 {
+        println!("Starting iteration: {}", iteration);
+        let look_from: Point3 = Point3::new(x, 2.0, z);
+        x += x_increment;
+        z += z_increment;
+        let look_at: Point3 = Point3::new(0.0, 0.0, 0.0);
+        let vup: Vec3 = Vec3::new(0.0, 1.0, 0.0);
+        let dist_to_focus: f32 = 10.0;
+        let aperture: f32 = 0.1;
 
-    // Render
-    let pixels = (0..IMAGE_HEIGHT)
-        .into_par_iter()
-        .rev()
-        .map(|j| {
-            (0..IMAGE_WIDTH)
-                .into_par_iter()
-                .map(|i| {
-                    let mut col = Color::new(0.0, 0.0, 0.0);
-                    for _ in 0..SAMPLES_PER_PIXEL {
-                        let u = (i as f32 + random_double()) / (IMAGE_WIDTH as f32 - 1.0);
-                        let v = (j as f32 + random_double()) / (IMAGE_HEIGHT as f32 - 1.0);
-                        let r = camera.get_ray(u, v);
-                        col += ray_color(&r, &world, MAX_DEPTH);
-                    }
-                    col =  col / SAMPLES_PER_PIXEL as f32;
-                    col = Color::new(col.x().sqrt(), col.y().sqrt(), col.z().sqrt());
-                    let ir = 255.99 * clamp(col.x(), 0.0, 0.999);
-                    let ig = 255.99 * clamp(col.y(), 0.0, 0.999);
-                    let ib = 255.99 * clamp(col.z(), 0.0, 0.999);
-                    format!("{} {} {}\n", ir as i32, ig as i32, ib as i32)
-                })
-            .collect::<Vec<String>>()
-            .join("")
-        })
-    .collect::<Vec<String>>()
-    .join("");
+        let camera = Camera::new(
+            look_from, look_at, vup,
+            20.0, ASPECT_RATIO, aperture, dist_to_focus
+        );
 
-    let mut pic = format!("P3\n{} {}\n255\n", IMAGE_WIDTH, IMAGE_HEIGHT);
-    pic = format!("{}{}", &pic, pixels);
+        let pixels = (0..IMAGE_HEIGHT)
+            .into_par_iter()
+            .rev()
+            .map(|j| {
+                (0..IMAGE_WIDTH)
+                    .into_par_iter()
+                    .map(|i| {
+                        let mut col = Color::new(0.0, 0.0, 0.0);
+                        for _ in 0..SAMPLES_PER_PIXEL {
+                            let u = (i as f32 + random_double()) / (IMAGE_WIDTH as f32 - 1.0);
+                            let v = (j as f32 + random_double()) / (IMAGE_HEIGHT as f32 - 1.0);
+                            let r = camera.get_ray(u, v);
+                            col += ray_color(&r, &world, MAX_DEPTH);
+                        }
+                        col =  col / SAMPLES_PER_PIXEL as f32;
+                        col = Color::new(col.x().sqrt(), col.y().sqrt(), col.z().sqrt());
+                        let ir = 255.99 * clamp(col.x(), 0.0, 0.999);
+                        let ig = 255.99 * clamp(col.y(), 0.0, 0.999);
+                        let ib = 255.99 * clamp(col.z(), 0.0, 0.999);
+                        format!("{} {} {}\n", ir as i32, ig as i32, ib as i32)
+                    })
+                .collect::<Vec<String>>()
+                .join("")
+            })
+        .collect::<Vec<String>>()
+        .join("");
 
-    if fs::write("output.ppm", pic).is_err() {
-        eprintln!("Error generating image");
-    };
+        let mut pic = format!("P3\n{} {}\n255\n", IMAGE_WIDTH, IMAGE_HEIGHT);
+        pic = format!("{}{}", &pic, pixels);
 
+        let file_name = format!("output-{}.ppm", iteration);
+
+        println!("Writing iteration: {}", file_name);
+        if fs::write(file_name, pic).is_err() {
+            eprintln!("Error generating image");
+        };
+    }
 }
