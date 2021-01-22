@@ -86,14 +86,6 @@ pub fn dot(v1: Vec3, v2: Vec3) -> f32 {
         v1.z() * v2.z()
 }
 
-pub fn cross(u: Vec3, v: Vec3) -> Vec3 {
-    Vec3::new(
-        u.y() * v.z() - u.z() * v.y(),
-        u.z() * v.x() - u.x() * v.z(),
-        u.x() * v.y() - u.y() * v.x()
-    )
-}
-
 pub fn unit_vector(v: Vec3) -> Vec3 {
     v / v.length()
 }
@@ -110,15 +102,6 @@ pub fn random_unit_in_sphere() -> Vec3 {
 
 pub fn random_unit_vector() -> Vec3 {
     unit_vector(random_unit_in_sphere())
-}
-
-pub fn random_in_hemisphere(normal: Vec3) -> Vec3 {
-    let in_unit_sphere = random_unit_in_sphere();
-
-    if dot(in_unit_sphere, normal) > 0.0 {
-        return in_unit_sphere;
-    }
-    return -in_unit_sphere;
 }
 
 pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {

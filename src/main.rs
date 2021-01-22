@@ -8,11 +8,10 @@ mod material;
 
 use crate::camera::{Camera};
 use crate::hittable::{Hittable, HittableList};
-//use crate::material::{Lambertian, Metal, Dielectric};
 use crate::material::{Material};
 use crate::sphere::{Sphere};
 use crate::utility::{
-    INFINITY, unit_vector, dot,
+    INFINITY, unit_vector,
     random_double, clamp,
 };
 use crate::vec3::{Vec3, Color, Point3};
@@ -44,21 +43,6 @@ fn ray_color(r: &ray::Ray, world: &hittable::HittableList, depth: i32) -> vec3::
     let unit_direciton = unit_vector(r.direction());
     let t = 0.5 * (unit_direciton.y() + 1.0);
     return (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0);
-}
-
-fn hit_sphere(center: vec3::Vec3, radius: f32, r: &ray::Ray) -> f32 {
-    let oc = r.origin() - center;
-    let a = r.direction().length_squared();
-    let half_b = dot(oc, r.direction());
-    let c = oc.length_squared() - radius * radius;
-    let discriminant = half_b * half_b - a * c;
-
-    if discriminant < 0.0 {
-        -1.0
-    }
-    else {
-        (-half_b - discriminant.sqrt()) / a
-    }
 }
 
 fn write_color(color: Color, samples_per_pixel: f32) {
