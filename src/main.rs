@@ -9,10 +9,11 @@ mod material;
 use crate::camera::{Camera};
 use crate::hittable::{Hittable, HittableList};
 use crate::material::{Material};
-use crate::sphere::{Sphere};
+use crate::sphere::{Sphere, MovingSphere};
 use crate::utility::{
     INFINITY, unit_vector,
     random_double, clamp,
+    random_double_range,
 };
 use crate::vec3::{Vec3, Color, Point3};
 
@@ -67,11 +68,11 @@ fn scene() -> HittableList {
                 if choose_mat < 0.8 {
                     // diffuse
                     albedo = Color::random() * Color::random();
-                    //sphere_material = Lambertian::new(albedo);
+                    let sphere_material = Material::Lambertian { albedo };
+                    let center2 = center + Vec3::new(0.0, random_double_range(0.0, 0.5), 0.0);
+
                     objects.push(Box::new(
-                        Sphere::new(center, 0.2, Material::Lambertian {
-                            albedo: albedo
-                        })
+                        MovingSphere::new(center, center2, 0.0, 1.0, 0.2, sphere_material)
                     ));
                 }
                 else if choose_mat < 0.95 {
@@ -124,8 +125,8 @@ fn balls_on_plain(iterations: usize) {
     let x_increment = 0.05;
     let z_increment = 0.1;
 
-    let aspect_ratio: f32 = 3.0 / 2.0;
-    let image_width: usize = 200;
+    let aspect_ratio: f32 = 16.0 / 9.0;
+    let image_width: usize = 400;
     let image_height: usize = ((image_width as f32) / aspect_ratio) as usize;
     let samples_per_pizel: usize = 100;
     let max_depth: usize = 50;
@@ -142,7 +143,8 @@ fn balls_on_plain(iterations: usize) {
 
         let camera = Camera::new(
             look_from, look_at, vup,
-            20.0, aspect_ratio, aperture, dist_to_focus
+            20.0, aspect_ratio, aperture, dist_to_focus,
+            0.0, 1.0
         );
 
         let pixels = (0..image_height)
