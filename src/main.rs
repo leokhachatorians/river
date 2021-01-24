@@ -47,7 +47,6 @@ fn ray_color(ray: ray::Ray, world: &hittable::HittableList, depth: i32) -> vec3:
 }
 
 fn scene() -> HittableList {
-    //let mut world: hittable::HittableList = Default::default();
     let material_ground = Material::Lambertian {
         albedo: Color::new(0.5, 0.5, 0.5)
     };

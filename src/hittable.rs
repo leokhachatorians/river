@@ -31,7 +31,7 @@ impl Hittable for HittableList {
         let mut closest_so_far: f32 = t_max;
 
         for object in self.objects.iter() {
-            if let Some(hit) = object.hit(r, t_min, closest_so_far) {
+            if let Some(hit) = object.hit(ray, t_min, closest_so_far) {
                 closest_so_far = hit.t;
                 hit_anything = Some(hit);
             }
@@ -41,8 +41,8 @@ impl Hittable for HittableList {
 }
 
 impl HitRecord<'_> {
-    pub fn set_face_normal(&mut self, r: Ray, outward_normal: Vec3) {
-        self.front_face = dot(r.direction(), outward_normal) < 0.0;
+    pub fn set_face_normal(&mut self, ray: Ray, outward_normal: Vec3) {
+        self.front_face = dot(ray.direction(), outward_normal) < 0.0;
         self.normal = if self.front_face {
             outward_normal
         } else {
