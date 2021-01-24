@@ -29,7 +29,7 @@ impl Material {
         match self {
             Material::Metal { albedo, fuzz } => {
                 let reflected: Vec3 = reflect(unit_vector(r_in.direction()), rec.normal);
-                let scattered = Ray::new(rec.p, reflected + fuzz * random_unit_in_sphere());
+                let scattered = Ray::new(rec.p, reflected + fuzz * random_unit_in_sphere(), r_in.time());
                 let attenuation = albedo;
                 Some((scattered, attenuation, dot(scattered.direction(), rec.normal) > 0.0))
             }
@@ -41,7 +41,7 @@ impl Material {
                     scatter_direction = rec.normal;
                 }
 
-                let scattered = Ray::new(rec.p, scatter_direction);
+                let scattered = Ray::new(rec.p, scatter_direction, r_in.time());
                 let attenuation = albedo;
                 Some((scattered, attenuation, true))
             }
@@ -74,7 +74,7 @@ impl Material {
                     direction = refract(unit_direction, rec.normal, refraction_ratio);
                 }
 
-                let scattered = Ray::new(rec.p, direction);
+                let scattered = Ray::new(rec.p, direction, r_in.time());
                 Some((scattered, attenuation, true))
             }
         }
