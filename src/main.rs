@@ -19,13 +19,8 @@ use crate::vec3::{Vec3, Color, Point3};
 use rayon::prelude::*;
 use std::fs;
 
-const IMAGE_WIDTH: i32 = 200;
-const ASPECT_RATIO: f32 = 3.0 / 2.0;
-const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f32 / ASPECT_RATIO) as i32;
-const SAMPLES_PER_PIXEL: i32 = 100;
-const MAX_DEPTH: i32 = 50;
 
-fn ray_color(ray: ray::Ray, world: &hittable::HittableList, depth: i32) -> vec3::Color {
+fn ray_color(ray: ray::Ray, world: &hittable::HittableList, depth: usize) -> vec3::Color {
     if depth <= 0 {
         return Color::new(0.0, 0.0, 0.0);
     }
@@ -120,18 +115,22 @@ fn scene() -> HittableList {
     HittableList::new(objects)
 }
 
-
-fn main() {
-    // World
+fn balls_on_plain(iterations: usize) {
     let world = scene();
+
     let mut x = 13.0;
     let mut z = 3.0;
 
     let x_increment = 0.05;
     let z_increment = 0.1;
 
-    for iteration in 1..5 {
-        println!("FART");
+    let aspect_ratio: f32 = 3.0 / 2.0;
+    let image_width: usize = 200;
+    let image_height: usize = ((image_width as f32) / aspect_ratio) as usize;
+    let samples_per_pizel: usize = 100;
+    let max_depth: usize = 50;
+
+    for iteration in 1..iterations + 1 {
         println!("Starting iteration: {}", iteration);
         let look_from: Point3 = Point3::new(x, 2.0, z);
         x += x_increment;
@@ -143,24 +142,24 @@ fn main() {
 
         let camera = Camera::new(
             look_from, look_at, vup,
-            20.0, ASPECT_RATIO, aperture, dist_to_focus
+            20.0, aspect_ratio, aperture, dist_to_focus
         );
 
-        let pixels = (0..IMAGE_HEIGHT)
+        let pixels = (0..image_height)
             .into_par_iter()
             .rev()
             .map(|j| {
-                (0..IMAGE_WIDTH)
+                (0..image_width)
                     .into_par_iter()
                     .map(|i| {
                         let mut col = Color::new(0.0, 0.0, 0.0);
-                        for _ in 0..SAMPLES_PER_PIXEL {
-                            let u = (i as f32 + random_double()) / (IMAGE_WIDTH as f32 - 1.0);
-                            let v = (j as f32 + random_double()) / (IMAGE_HEIGHT as f32 - 1.0);
+                        for _ in 0..samples_per_pizel {
+                            let u = (i as f32 + random_double()) / (image_width as f32 - 1.0);
+                            let v = (j as f32 + random_double()) / (image_height as f32 - 1.0);
                             let ray = camera.get_ray(u, v);
-                            col += ray_color(ray, &world, MAX_DEPTH);
+                            col += ray_color(ray, &world, max_depth);
                         }
-                        col =  col / SAMPLES_PER_PIXEL as f32;
+                        col = col / samples_per_pizel as f32;
                         col = Color::new(col.x().sqrt(), col.y().sqrt(), col.z().sqrt());
                         let ir = 255.99 * clamp(col.x(), 0.0, 0.999);
                         let ig = 255.99 * clamp(col.y(), 0.0, 0.999);
@@ -173,7 +172,7 @@ fn main() {
         .collect::<Vec<String>>()
         .join("");
 
-        let mut pic = format!("P3\n{} {}\n255\n", IMAGE_WIDTH, IMAGE_HEIGHT);
+        let mut pic = format!("P3\n{} {}\n255\n", image_width, image_height);
         pic = format!("{}{}", &pic, pixels);
 
         let file_name = format!("output-{}.ppm", iteration);
@@ -183,4 +182,9 @@ fn main() {
             eprintln!("Error generating image");
         };
     }
+}
+
+
+fn main() {
+    balls_on_plain(1);
 }
