@@ -19,31 +19,29 @@ use crate::vec3::{Vec3, Color, Point3};
 use rayon::prelude::*;
 use std::fs;
 
-const IMAGE_WIDTH: i32 = 800;
+const IMAGE_WIDTH: i32 = 200;
 const ASPECT_RATIO: f32 = 3.0 / 2.0;
 const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f32 / ASPECT_RATIO) as i32;
-const SAMPLES_PER_PIXEL: i32 = 50;
+const SAMPLES_PER_PIXEL: i32 = 100;
 const MAX_DEPTH: i32 = 50;
 
-fn ray_color(r: &ray::Ray, world: &hittable::HittableList, depth: i32) -> vec3::Color {
+fn ray_color(ray: ray::Ray, world: &hittable::HittableList, depth: i32) -> vec3::Color {
     if depth <= 0 {
         return Color::new(0.0, 0.0, 0.0);
     }
 
-    if let Some(hit) = world.hit(r, 0.001, INFINITY) {
-        // Real?
-
-        if let Some(scatter_tuple) = hit.material.scatter(&r, &hit) {
+    if let Some(hit) = world.hit(ray, 0.001, INFINITY) {
+        if let Some(scatter_tuple) = hit.material.scatter(&ray, &hit) {
             let (scattered, attenuation, hit) = scatter_tuple;
 
             if hit {
-                return attenuation * ray_color(&scattered, world, depth -1 );
+                return attenuation * ray_color(scattered, world, depth -1 );
             }
             return Color::new(0.0, 0.0, 0.0);
         }
     }
 
-    let unit_direciton = unit_vector(r.direction());
+    let unit_direciton = unit_vector(ray.direction());
     let t = 0.5 * (unit_direciton.y() + 1.0);
     return (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0);
 }
@@ -133,7 +131,8 @@ fn main() {
     let x_increment = 0.05;
     let z_increment = 0.1;
 
-    for iteration in 0..20 {
+    for iteration in 1..5 {
+        println!("FART");
         println!("Starting iteration: {}", iteration);
         let look_from: Point3 = Point3::new(x, 2.0, z);
         x += x_increment;
@@ -159,8 +158,8 @@ fn main() {
                         for _ in 0..SAMPLES_PER_PIXEL {
                             let u = (i as f32 + random_double()) / (IMAGE_WIDTH as f32 - 1.0);
                             let v = (j as f32 + random_double()) / (IMAGE_HEIGHT as f32 - 1.0);
-                            let r = camera.get_ray(u, v);
-                            col += ray_color(&r, &world, MAX_DEPTH);
+                            let ray = camera.get_ray(u, v);
+                            col += ray_color(ray, &world, MAX_DEPTH);
                         }
                         col =  col / SAMPLES_PER_PIXEL as f32;
                         col = Color::new(col.x().sqrt(), col.y().sqrt(), col.z().sqrt());
