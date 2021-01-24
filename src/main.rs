@@ -61,7 +61,6 @@ fn scene() -> HittableList {
             );
 
             if (center - Point3::new(4.0, 0.2, 0.0)).length() > 0.9 {
-                //let mut sphere_material;
                 let albedo: Color;
                 let fuzz: f32;
 
@@ -79,20 +78,16 @@ fn scene() -> HittableList {
                     // metal
                     albedo = Color::random_range(0.5, 1.0);
                     fuzz = random_double();
-                    //sphere_material = Metal::new(albedo, fuzz);
+                    let sphere_material = Material::Metal{ albedo, fuzz };
                     objects.push(Box::new(
-                        Sphere::new(center, 0.2, Material::Metal {
-                            albedo: albedo, fuzz: fuzz
-                        })
+                        Sphere::new(center, 0.2, sphere_material)
                     ));
                 }
                 else {
                     // glass
-                    //sphere_material = Dielectric::new(1.5);
+                    let sphere_material = Material::Dielectric { index_of_refraction: 1.5 };
                     objects.push(Box::new(
-                        Sphere::new(center, 0.2, Material::Dielectric {
-                            index_of_refraction: 1.5
-                        })
+                        Sphere::new(center, 0.2, sphere_material)
                     ));
                 }
             }
