@@ -1,3 +1,4 @@
+mod aabb;
 mod camera;
 mod ray;
 mod utility;
@@ -6,6 +7,7 @@ mod sphere;
 mod hittable;
 mod material;
 
+use crate::aabb::{AABB};
 use crate::camera::{Camera};
 use crate::hittable::{Hittable, HittableList};
 use crate::material::{Material};
