@@ -1,7 +1,7 @@
 use std::ops::{
     Add, AddAssign, Sub, SubAssign,
     Div, DivAssign, Mul, MulAssign,
-    Neg
+    Neg, Index, IndexMut,
 };
 
 use crate::utility::{random_double, random_double_range};
@@ -283,6 +283,19 @@ impl DivAssign<Vec3> for Vec3 {
                 self.z() / other.z(),
             ]
         }
+    }
+}
+
+impl Index<usize> for Vec3 {
+    type Output = f32;
+    fn index<'a>(&'a self, i: usize) -> &'a f32 {
+        &self.elements[i]
+    }
+}
+
+impl IndexMut<usize> for Vec3 {
+    fn index_mut<'a>(&'a mut self, i: usize) -> &'a mut f32 {
+        &mut self.elements[i]
     }
 }
 
